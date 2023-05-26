@@ -1,0 +1,6 @@
+version: v1.1.0
+steps:
+  - build: -t $Registry/myacrapi:$ID -t $Registry/myacrapi:latest -f .\az-containerregistry\AzContainerReg\AzContainerReg\Dockerfile .\az-containerregistry\AzContainerReg\
+  - push:
+    - $Registry/myacrapi:$ID
+    - $Registry/myacrapi:latest
