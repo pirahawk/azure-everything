@@ -4,6 +4,7 @@ steps:
     build: -t $Registry/myacrapi:$ID -t $Registry/myacrapi:latest -f ./az-containerregistry/AzContainerReg/AzContainerReg/Dockerfile ./az-containerregistry/AzContainerReg/
   - id: test-image
     cmd: -t {{.Run.Registry}}/myacrapi:{{.Run.ID}}
+    detach: true
     ports: ["8080:80"]
     env: ["ASPNETCORE_URLS=http://+:80"]
   - id: push-images
