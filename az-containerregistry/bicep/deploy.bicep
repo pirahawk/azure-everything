@@ -64,6 +64,27 @@ resource webAppService 'Microsoft.Web/sites@2022-09-01' = {
     }
     httpsOnly:true
   }
+
+  resource apiAppServiceWebConfig 'config' ={
+    name: 'web'
+    properties: {
+      healthCheckPath: '/test'
+      // linuxFxVersion: 'DOTNETCORE|6.0'
+      // netFrameworkVersion: 'v6.0'
+      apiDefinition: {
+        url: '/swagger'
+      }
+    }
+  }
+
+
+  resource appSettingsConfig 'config'={
+    name: 'appsettings'
+    properties:{
+      AppOptions__StationName: 'WebAppWeatherStation'
+      AppOptions__KeyVaultUri: keyvault.properties.vaultUri
+    }
+  }
 }
 
 module rbacAssign 'rbac.bicep' = {

@@ -58,6 +58,16 @@ resource webappKVReader 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
   }
 }
 
+resource webappKVSecretsOfficer 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
+  name: guid(keyvault.id, webAppServicePrincipalId, KVSecretsOfficer.name)
+  scope: keyvault
+  properties:{
+    principalId: webAppServicePrincipalId
+    roleDefinitionId: KVSecretsOfficer.id
+    principalType: 'ServicePrincipal'
+    description: 'Assigning KV reader to ${webAppServiceId}'
+  }
+}
 
 resource acrPullWebAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
   name: guid(webAppServiceId, webAppServicePrincipalId, AcrPullRole.name)
