@@ -1,12 +1,24 @@
-param resourceGroupName string
-param targetLocation string
+param randomSuffix string
+param userPrincipalId string
 
-param containerRegistryName string
-param appServicePlanName string
-param webAppServiceName string
+var tenantId = subscription().tenantId
+
+resource keyvault 'Microsoft.KeyVault/vaults@2023-02-01' = {
+  name: 'keyvault${randomSuffix}'
+  location: resourceGroup().location
+  properties: {
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: tenantId
+    accessPolicies:[]
+    enableRbacAuthorization: true
+  }
+}
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
-  name: containerRegistryName
+  name: 'containerreg${randomSuffix}'
   location: resourceGroup().location
   sku: {
     name: 'Standard'
@@ -18,7 +30,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
-  name: appServicePlanName
+  name: 'azAsp${randomSuffix}'
   location: resourceGroup().location
   kind:'linux'
   sku:{
@@ -34,7 +46,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
 var webAppDockerImage = '${containerRegistry.properties.loginServer}/myacrapi:latest'
 
 resource webAppService 'Microsoft.Web/sites@2022-09-01' = {
-  name: webAppServiceName
+  name: 'azAsp${randomSuffix}'
   location: resourceGroup().location
   identity:{
     type:'SystemAssigned'
@@ -58,10 +70,11 @@ module rbacAssign 'rbac.bicep' = {
   name: 'assignRbacRoles'
   dependsOn: [ containerRegistry, webAppService]
   params:{
+    userPrincipalId: userPrincipalId
     containerRegistryName: containerRegistry.name
     webAppServiceId: webAppService.id
     webAppServicePrincipalId: webAppService.identity.principalId
-
+    keyvaultName: keyvault.name
   }
 }
 
