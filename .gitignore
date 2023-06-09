@@ -8,6 +8,9 @@ appsettings.local.json
 deploy.md
 deploy.ps1
 
+# vscode 
+.vscode/
+
 # User-specific files
 *.rsuser
 *.suo
