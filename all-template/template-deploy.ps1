@@ -3,6 +3,7 @@
 $random = "[randomGuidSuffix]"
 $azGroupName = "az-[group name]-$random"
 $azDeploymentName = "deployment-$azGroupName"
+$sid = $(az ad signed-in-user show --query "id").Trim('"')
 
 
 if($null -eq $(az group show -n $azGroupName)){
@@ -14,5 +15,5 @@ if($null -eq $(az group show -n $azGroupName)){
 
  az deployment group create -g $azGroupName -n $azDeploymentName -f .\<FOLDER>\bicep\deploy.bicep `
  --parameters `
- resourceGroupName=$azGroupName `
- targetLocation="uksouth"
+ randomSuffix="$random" `
+ userPrincipalId="$sid"

@@ -1,4 +1,13 @@
-param resourceGroupName string
-param targetLocation string
+param randomSuffix string
+param userPrincipalId string
+var tenantId = subscription().tenantId
 
-output deployresourceGroupName string = resourceGroupName
+module rbacAssign 'rbac.bicep' = {
+  name: 'assignRbacRoles'
+  dependsOn: [ ]
+  params:{
+    userPrincipalId: userPrincipalId
+  }
+}
+
+output deployresourceGroupName string = resourceGroup().name
