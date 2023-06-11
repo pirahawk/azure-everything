@@ -1,11 +1,13 @@
 using AzAppConfiguration.Controllers;
 using Azure.Identity;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 //var appConfigUri = builder.Configuration.GetValue<string>($"{nameof(ApiOptions)}:{nameof(ApiOptions.AppConfigurationUri)}");
 var appConfigConnection = builder.Configuration.GetConnectionString("AppConfig");
+var test = builder.Environment.EnvironmentName;
 
 if (!string.IsNullOrWhiteSpace(appConfigConnection))
 {
@@ -19,7 +21,11 @@ if (!string.IsNullOrWhiteSpace(appConfigConnection))
             // What is super interesting, I know that there will be KV secrets in the App Config, I only need to set the KV access credentials, I don't need to know the actual name of the keyvault or need to maintain that configuration
             // By virtue of creating the KeyValut reference (see your deploy scripts, this was all handled by App Config from that point
             kv.SetCredential(cliCredentials);
-        });
+        })
+        // Load configuration values with no label
+        .Select(KeyFilter.Any, LabelFilter.Null)
+        // Override with any configuration values specific to current hosting env
+        .Select(KeyFilter.Any, builder.Environment.EnvironmentName);
     });
 }
 

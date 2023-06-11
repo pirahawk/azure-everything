@@ -3,12 +3,19 @@ param userPrincipalId string
 
 param appConfigKV array = [
   {
-    Key: 'TestOptions:Name'
-    Value: 'Foo'
+    key: 'TestOptions:Name'
+    value: 'Foo'
+    label: ''
   }
   {
-    Key: 'TestOptions:Secret'
-    Value: 'Bar'
+    key: 'TestOptions:Secret'
+    value: 'Bar'
+    label: ''
+  }
+  {
+    key: 'TestOptions:Message'
+    value: 'Dev Message'
+    label: 'Development'
   }
 ]
 
@@ -41,7 +48,8 @@ resource appconfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
   resource appConfigValues 'keyValues@2023-03-01' = [for configValue in appConfigKV: {
     name: configValue.Key
     properties:{
-      value: configValue.Value
+      value: configValue.value
+      label: configValue.label  // NOTE: Labels do not seem to work through Bicep, recommend doing this through AZ CLI
       contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8' // see https://learn.microsoft.com/en-us/azure/azure-app-configuration/concept-config-file#file-content-profile-kvset
     }
   }]
