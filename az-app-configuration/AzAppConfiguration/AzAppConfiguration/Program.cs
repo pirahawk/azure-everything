@@ -12,7 +12,14 @@ if (!string.IsNullOrWhiteSpace(appConfigConnection))
     builder.Configuration.AddAzureAppConfiguration(appConfigOptions =>
     {
         var cliCredentials = new AzureCliCredential(); // For this to work, make sure that App Config has a System Identity (or equivalent). See: https://learn.microsoft.com/en-us/azure/azure-app-configuration/howto-integrate-azure-managed-service-identity?tabs=core5x&pivots=framework-dotnet
-        appConfigOptions.Connect(new Uri(appConfigConnection), cliCredentials);
+        appConfigOptions
+        .Connect(new Uri(appConfigConnection), cliCredentials)
+        .ConfigureKeyVault(kv =>
+        {
+            // What is super interesting, I know that there will be KV secrets in the App Config, I only need to set the KV access credentials, I don't need to know the actual name of the keyvault or need to maintain that configuration
+            // By virtue of creating the KeyValut reference (see your deploy scripts, this was all handled by App Config from that point
+            kv.SetCredential(cliCredentials);
+        });
     });
 }
 

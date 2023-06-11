@@ -45,7 +45,6 @@ resource appconfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
       contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8' // see https://learn.microsoft.com/en-us/azure/azure-app-configuration/concept-config-file#file-content-profile-kvset
     }
   }]
-
 }
 
 module rbacAssign 'rbac.bicep' = {
