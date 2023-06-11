@@ -1,6 +1,9 @@
 using AzAppConfiguration.Controllers;
 using Azure.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +29,13 @@ if (!string.IsNullOrWhiteSpace(appConfigConnection))
         .Select(KeyFilter.Any, LabelFilter.Null)
         // Override with any configuration values specific to current hosting env
         .Select(KeyFilter.Any, builder.Environment.EnvironmentName);
+
+        // Load all feature flags with no label
+        appConfigOptions.UseFeatureFlags();
     });
 }
+
+builder.Services.AddFeatureManagement();
 
 builder.Services.Configure<TestOptions>(builder.Configuration.GetSection(nameof(TestOptions)));
 

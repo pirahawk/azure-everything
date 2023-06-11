@@ -11,11 +11,15 @@ $azAppConfigName=$(az appconfig list --query "[?(contains(name, 'appconfig'))].n
 $azAppConfigEndpoint = $(az appconfig show -n "$azAppConfigName" --query "endpoint")
 
 # I am resetting the keys here through AZ CLI, as BICEP does not support setting labels for some reason
-# I am also overriding the content type because otherwise it keeps erroring saying it expects JSON
+# I am also overriding the content type because otherwise it keeps erroring saying it expects JSON. See https://learn.microsoft.com/en-us/azure/azure-app-configuration/howto-leverage-json-content-type#overview
 az appconfig kv set -n $azAppConfigName --content-type text/html --key "TestOptions:Name" --value Foo --yes
 az appconfig kv set -n $azAppConfigName --content-type text/html --key "TestOptions:Secret" --value Bar --yes
 az appconfig kv set -n $azAppConfigName --content-type text/html --key "TestOptions:Message" --value 'Prod Message' --yes
 az appconfig kv set -n $azAppConfigName --content-type text/html --key "TestOptions:Message" --value 'Dev Message' --label Development --yes
+
+# Set feature flags
+az appconfig feature set -n $azAppConfigName --feature MyTestFeature --yes
+az appconfig feature enable -n $azAppConfigName --feature MyTestFeature --yes
 
 # Set a KV secret reference in the APP configuration
 # NOTE: What is interesting is if you look at what is generated in the App config AZ portal (go Advanced Edit), 
