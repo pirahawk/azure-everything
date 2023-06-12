@@ -1,0 +1,13 @@
+version: v1.1.0
+steps:
+  - id: build-image
+    build: -t $Registry/mycontainerapi:$ID -t $Registry/mycontainerapi:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService/Dockerfile ./az-container-apps/AzContainerAppService/
+  - id: test-image
+    cmd: -t {{.Run.Registry}}/mycontainerapi:{{.Run.ID}}
+    detach: true
+    ports: ["8080:80"]
+    env: ["ASPNETCORE_URLS=http://+:80"]
+  - id: push-images
+    push:
+    - $Registry/mycontainerapi:$ID
+    - $Registry/mycontainerapi:latest
