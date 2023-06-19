@@ -32,7 +32,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '$ai${randomSuffix}'
+  name: 'ai${randomSuffix}'
   location: targetLocation
   kind: 'web'
   properties: {

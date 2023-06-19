@@ -1,6 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddHealthChecks();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -21,6 +24,7 @@ var app = builder.Build();
 
 //app.UseAuthorization();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
