@@ -111,6 +111,15 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
             memory: '2Gi'
           }
           env: shared_config
+          probes:[
+            {
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds:5
+            }
+          ]
         }
       ]
       scale: {
