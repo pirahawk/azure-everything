@@ -36,12 +36,12 @@ steps:
      - ServerApiOptions::Scheme=http
 
 
-  # - id: push-images
-  #   when: ["build-appservice-image", "build-serverapi-image", "build-clientapi-image"]
-  #   push:
-  #   - $Registry/azcontainerappservice:$ID
-  #   - $Registry/azcontainerappservice:latest
-  #   - $Registry/azserverapi:$ID
-  #   - $Registry/azserverapi:latest
-  #   - $Registry/azclientapi:$ID
-  #   - $Registry/azclientapi:latest
+  - id: push-images
+    when: ["build-appservice-image", "build-serverapi-image", "build-clientapi-image"]
+    push:
+    - $Registry/azcontainerappservice:$ID
+    - $Registry/azcontainerappservice:latest
+    - $Registry/azserverapi:$ID
+    - $Registry/azserverapi:latest
+    - $Registry/azclientapi:$ID
+    - $Registry/azclientapi:latest
