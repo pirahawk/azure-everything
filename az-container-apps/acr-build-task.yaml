@@ -20,7 +20,7 @@ steps:
     ports: ["8081:80"]
     env: 
       - ["ASPNETCORE_URLS=http://+:80"]
-      - ["ApiOptions:ItemName=AzContainerItem"]
+      - ["ApiOptions--ItemName=AzContainerItem"]
 
   - id: build-clientapi-image
     when: ["-"]
@@ -32,8 +32,8 @@ steps:
     ports: ["8082:80"]
     env: 
       - ["ASPNETCORE_URLS=http://+:80"]
-      - ["ServerApiOptions:Host=localhost:8081"]
-      - ["ServerApiOptions:Scheme=http"]
+      - ["ServerApiOptions--Host=localhost:8081"]
+      - ["ServerApiOptions--Scheme=http"]
 
 
   - id: push-images
