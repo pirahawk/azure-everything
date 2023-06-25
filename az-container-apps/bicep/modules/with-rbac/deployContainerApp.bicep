@@ -76,7 +76,7 @@ var shared_config = [
   }
 ]
 
-var containerImageToUse = '${containerRegistry.properties.loginServer}/mycontainerapi:latest'
+var containerImageToUse = '${containerRegistry.properties.loginServer}/azcontainerappservice:latest'
 
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
   name: 'containerapp${randomSuffix}'
@@ -105,7 +105,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
       containers: [
         {
           image: containerImageToUse //'${azureContainerRegistry}.azurecr.io/${azureContainerRegistryImage}:${azureContainerRegistryImageTag}'
-          name: 'mycontainerapp'
+          name: 'myazcontainerappsvc'
           resources: {
             cpu: 1
             memory: '2Gi'
