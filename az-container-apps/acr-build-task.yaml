@@ -19,29 +19,29 @@ steps:
     detach: true
     ports: ["8081:80"]
     env: 
-     - "ASPNETCORE_URLS": "http://+:80"
-     - "ApiOptions::ItemName": "AzContainerItem"
+     - ASPNETCORE_URLS=http://+:80
+     - ApiOptions::ItemName=AzContainerItem
 
-  - id: build-clientapi-image
-    when: ["-"]
-    build: -t $Registry/azclientapi:$ID -t $Registry/azclientapi:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.ClientApi/Dockerfile ./az-container-apps/AzContainerAppService/
-  - id: test-clientapi-image
-    when: ["build-clientapi-image"]
-    cmd: -t {{.Run.Registry}}/azclientapi:{{.Run.ID}}
-    detach: true
-    ports: ["8082:80"]
-    env: 
-     - "ASPNETCORE_URLS": "http://+:80"
-     - "ServerApiOptions::Host": "localhost:8081"
-     - "ServerApiOptions::Scheme": "http"
+  # - id: build-clientapi-image
+  #   when: ["-"]
+  #   build: -t $Registry/azclientapi:$ID -t $Registry/azclientapi:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.ClientApi/Dockerfile ./az-container-apps/AzContainerAppService/
+  # - id: test-clientapi-image
+  #   when: ["build-clientapi-image"]
+  #   cmd: -t {{.Run.Registry}}/azclientapi:{{.Run.ID}}
+  #   detach: true
+  #   ports: ["8082:80"]
+  #   env: 
+  #    - "ASPNETCORE_URLS": "http://+:80"
+  #    - "ServerApiOptions::Host": "localhost:8081"
+  #    - "ServerApiOptions::Scheme": "http"
 
 
-  - id: push-images
-    when: ["build-appservice-image", "build-serverapi-image", "build-clientapi-image"]
-    push:
-    - $Registry/azcontainerappservice:$ID
-    - $Registry/azcontainerappservice:latest
-    - $Registry/azserverapi:$ID
-    - $Registry/azserverapi:latest
-    - $Registry/azclientapi:$ID
-    - $Registry/azclientapi:latest
+  # - id: push-images
+  #   when: ["build-appservice-image", "build-serverapi-image", "build-clientapi-image"]
+  #   push:
+  #   - $Registry/azcontainerappservice:$ID
+  #   - $Registry/azcontainerappservice:latest
+  #   - $Registry/azserverapi:$ID
+  #   - $Registry/azserverapi:latest
+  #   - $Registry/azclientapi:$ID
+  #   - $Registry/azclientapi:latest
