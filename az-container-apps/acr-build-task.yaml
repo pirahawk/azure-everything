@@ -19,8 +19,8 @@ steps:
     detach: true
     ports: ["8081:80"]
     env: 
-     - ["ASPNETCORE_URLS=http://+:80"]
-     - ["ApiOptions:ItemName=AzContainerItem"]
+      - ["ASPNETCORE_URLS=http://+:80"]
+      - ["ApiOptions:ItemName=AzContainerItem"]
 
   - id: build-clientapi-image
     when: ["-"]
@@ -31,9 +31,9 @@ steps:
     detach: true
     ports: ["8082:80"]
     env: 
-     - ["ASPNETCORE_URLS=http://+:80"]
-     - ["ServerApiOptions:Host=localhost:8081"]
-     - ["ServerApiOptions:Scheme=http"]
+      - ["ASPNETCORE_URLS=http://+:80"]
+      - ["ServerApiOptions:Host=localhost:8081"]
+      - ["ServerApiOptions:Scheme=http"]
 
 
   - id: push-images
