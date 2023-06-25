@@ -1,24 +1,30 @@
 version: v1.1.0
 steps:
   - id: build-appservice-image
+    when: ["-"]
     build: -t $Registry/azcontainerappservice:$ID -t $Registry/azcontainerappservice:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService/Dockerfile ./az-container-apps/AzContainerAppService/
   - id: test-appservice-image
+    when: ["build-appservice-image"]
     cmd: -t {{.Run.Registry}}/azcontainerappservice:{{.Run.ID}}
     detach: true
     ports: ["8080:80"]
     env: ["ASPNETCORE_URLS=http://+:80"]
 
   - id: build-serverapi-image
+    when: ["-"]
     build: -t $Registry/azserverapi:$ID -t $Registry/azserverapi:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.ServerApi/Dockerfile ./az-container-apps/AzContainerAppService/
   - id: test-serverapi-image
+    when: ["build-serverapi-image"]
     cmd: -t {{.Run.Registry}}/azserverapi:{{.Run.ID}}
     detach: true
     ports: ["8080:80"]
     env: ["ASPNETCORE_URLS=http://+:80"]
 
   - id: build-clientapi-image
+    when: ["-"]
     build: -t $Registry/azclientapi:$ID -t $Registry/azclientapi:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.ClientApi/Dockerfile ./az-container-apps/AzContainerAppService/
   - id: test-clientapi-image
+    when: ["build-clientapi-image"]
     cmd: -t {{.Run.Registry}}/azclientapi:{{.Run.ID}}
     detach: true
     ports: ["8080:80"]
