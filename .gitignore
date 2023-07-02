@@ -7,6 +7,7 @@
 appsettings.local.json
 deploy.md
 deploy.ps1
+local-az-dapr-components
 
 # vscode 
 .vscode/
