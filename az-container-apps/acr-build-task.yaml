@@ -70,3 +70,7 @@ steps:
     - $Registry/azserverapi:latest
     - $Registry/azclientapi:$ID
     - $Registry/azclientapi:latest
+    - $Registry/azdaprpubsubsubscriber:$ID
+    - $Registry/azdaprpubsubsubscriber:latest
+    - $Registry/azdaprpubsubpublisher:$ID
+    - $Registry/azdaprpubsubpublisher:latest
