@@ -1,0 +1,35 @@
+version: v1.1.0
+steps:
+  - id: build-dapr-pubsub-subscriber
+    when: ["-"]
+    build: -t $Registry/azdaprpubsubsubscriber:$ID -t $Registry/azdaprpubsubsubscriber:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.Dapr.PubSub.SubscribeApi/Dockerfile ./az-container-apps/AzContainerAppService/
+  - id: test-dapr-pubsub-subscriber-image
+    when: ["build-dapr-pubsub-subscriber"]
+    cmd: -t {{.Run.Registry}}/azdaprpubsubsubscriber:{{.Run.ID}}
+    detach: true
+    ports: ["8083:80"]
+    env: 
+     - ASPNETCORE_URLS=http://+:80
+     - ServerApiOptions::Host=localhost:8081
+     - ServerApiOptions::Scheme=http
+
+  - id: build-dapr-pubsub-publisher
+    when: ["-"]
+    build: -t $Registry/azdaprpubsubpublisher:$ID -t $Registry/azdaprpubsubpublisher:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.Dapr.PubSub.PublishApi/Dockerfile ./az-container-apps/AzContainerAppService/
+  - id: test-dapr-pubsub-publisher-image
+    when: ["build-dapr-pubsub-publisher"]
+    cmd: -t {{.Run.Registry}}/azdaprpubsubpublisher:{{.Run.ID}}
+    detach: true
+    ports: ["8084:80"]
+    env: 
+     - ASPNETCORE_URLS=http://+:80
+     - ServerApiOptions::Host=localhost:8081
+     - ServerApiOptions::Scheme=http
+
+  - id: push-images
+    when: ["test-dapr-pubsub-subscriber-image", "test-dapr-pubsub-publisher-image"]
+    push:
+    - $Registry/azdaprpubsubsubscriber:$ID
+    - $Registry/azdaprpubsubsubscriber:latest
+    - $Registry/azdaprpubsubpublisher:$ID
+    - $Registry/azdaprpubsubpublisher:latest
