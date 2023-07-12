@@ -96,6 +96,7 @@ resource daprComponentPubsub 'Microsoft.App/managedEnvironments/daprComponents@2
     ]
     scopes: [
       'mypublisher'
+      'mysubscriber'
     ]
   }
   dependsOn: [
@@ -152,6 +153,97 @@ resource daprPublishApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
         {
           image: daprPublishContainerImageToUse
           name: 'daprpubapi'
+          resources: {
+            cpu: 1
+            memory: '2Gi'
+          }
+          env: [
+            {
+              name: 'ASPNETCORE_ENVIRONMENT'
+              value: 'Development'
+            }
+            {
+              name: 'ASPNETCORE_URLS'
+              value: 'http://+:8080'
+            }
+            {
+              name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+              value: appInsights.properties.InstrumentationKey
+            }
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              value: appInsights.properties.ConnectionString
+            }
+            {
+              name: 'ApiOptions__ItemName'
+              value: 'AppServiceItem'
+            }
+          ]
+          probes:[
+            {
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds:5
+            }
+          ]
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 2
+      }
+    }
+  }
+}
+
+
+
+
+var daprSubscribeContainerImageToUse = '${containerRegistry.properties.loginServer}/azdaprpubsubsubscriber:latest'
+
+resource daprSubscribeApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
+  name: 'daprsubapi${randomSuffix}'
+  location: targetLocation
+  dependsOn: [
+    daprComponentPubsub
+  ]
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${containerManagedIdentity.id}': {}
+    }
+  }
+  properties: {
+    
+    environmentId: containerAppEnvironment.id
+    configuration: {
+      ingress: {
+        targetPort: 8080
+        external: true
+        transport:'auto'
+      }
+      registries: [
+        {
+          server: containerRegistry.properties.loginServer
+          identity: containerManagedIdentity.id
+        }
+      ]
+      dapr:{
+        enabled: true
+        appId: 'mysubscriber'
+        appProtocol: 'http'
+        appPort: 8080
+        enableApiLogging: true
+        logLevel: 'debug'
+      }
+    }
+    template: {
+      containers: [
+        {
+          image: daprSubscribeContainerImageToUse
+          name: 'daprsubapi'
           resources: {
             cpu: 1
             memory: '2Gi'

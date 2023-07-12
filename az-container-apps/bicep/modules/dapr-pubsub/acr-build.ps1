@@ -1,6 +1,6 @@
 # To run:  .\az-container-apps\acr-build.ps1
 
-$acrGroupName=$(az group list --query "[?contains(name, 'az-container-apps')].name" --output tsv)
+$acrGroupName=$(az group list --query "[?contains(name, 'az-container-apps-f415bc222959')].name" --output tsv)
 $acrName=$(az acr list -g $acrGroupName --query "[].loginServer" --output tsv)
 
 Write-Output "ACR location is: $acrName"
