@@ -1,7 +1,7 @@
 // I am trying to deploy container app using Dapr for pub sub
 // This was inspired by
-// https://learn.microsoft.com/en-us/azure/container-apps/microservices-dapr-pubsub?pivots=nodejs
-// https://github.com/Azure-Samples/pubsub-dapr-nodejs-servicebus/blob/main/infra/app/app-env.bicep
+// https://learn.microsoft.com/en-us/azure/container-apps/microservices-dapr-pubsub?pivots=csharp
+// https://github.com/Azure-Samples/pubsub-dapr-csharp-servicebus/blob/main/infra/app/app-env.bicep
 // https://learn.microsoft.com/en-us/azure/container-apps/microservices-dapr-azure-resource-manager?tabs=bash&pivots=container-apps-arm
 // https://github.com/Azure-Samples/Tutorial-Deploy-Dapr-Microservices-ACA/blob/main/azuredeploy.bicep
 
@@ -79,6 +79,14 @@ resource ServiceBusDataOwnerRole 'Microsoft.Authorization/roleDefinitions@2022-0
   name: '090c5cfd-751d-490a-894a-3ce6f1109419'
 }
 
+resource ServiceBusSenderRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39'
+}
+
+resource ServiceBusReceiverRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'
+}
+
 resource acrPullContainerAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
   name: guid(containerRegistry.id, containerManagedIdentity.name, AcrPullRole.name)
   scope: containerRegistry
@@ -109,5 +117,27 @@ resource sbDataOwnerContainerAppService 'Microsoft.Authorization/roleAssignments
     roleDefinitionId: ServiceBusDataOwnerRole.id
     principalType: 'ServicePrincipal'
     description: 'ServiceBusDataOwnerRole'
+  }
+}
+
+resource sbSenderContainerAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
+  name: guid(servicebusNameSpace.id, containerManagedIdentity.name, ServiceBusSenderRole.name)
+  scope: servicebusNameSpace
+  properties:{
+    principalId: containerManagedIdentity.properties.principalId
+    roleDefinitionId: ServiceBusSenderRole.id
+    principalType: 'ServicePrincipal'
+    description: 'ServiceBusSenderRole'
+  }
+}
+
+resource sbReceiverContainerAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
+  name: guid(servicebusNameSpace.id, containerManagedIdentity.name, ServiceBusReceiverRole.name)
+  scope: servicebusNameSpace
+  properties:{
+    principalId: containerManagedIdentity.properties.principalId
+    roleDefinitionId: ServiceBusReceiverRole.id
+    principalType: 'ServicePrincipal'
+    description: 'ServiceBusReceiverRole'
   }
 }
