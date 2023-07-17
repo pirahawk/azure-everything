@@ -9,11 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzContainerAppService.Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzContainerAppService.ServerApi", "AzContainerAppService.ServerApi\AzContainerAppService.ServerApi.csproj", "{16A86E1C-3A16-417C-91C5-A21E55727E86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzContainerAppService.Dapr.PubSub.PublishApi", "AzContainerAppService.Dapr.PubSub.PublishApi\AzContainerAppService.Dapr.PubSub.PublishApi.csproj", "{7C1E02F3-9DDD-4639-AA4E-583361A7E0AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzContainerAppService.Dapr.PubSub.PublishApi", "AzContainerAppService.Dapr.PubSub.PublishApi\AzContainerAppService.Dapr.PubSub.PublishApi.csproj", "{7C1E02F3-9DDD-4639-AA4E-583361A7E0AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzContainerAppService.Dapr.PubSub.SubscribeApi", "AzContainerAppService.Dapr.PubSub.SubscribeApi\AzContainerAppService.Dapr.PubSub.SubscribeApi.csproj", "{158B4ADC-4B03-4D49-AB6A-CF75FF0F09AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzContainerAppService.Dapr.PubSub.SubscribeApi", "AzContainerAppService.Dapr.PubSub.SubscribeApi\AzContainerAppService.Dapr.PubSub.SubscribeApi.csproj", "{158B4ADC-4B03-4D49-AB6A-CF75FF0F09AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzContainerAppService.Dapr.Common", "AzContainerAppService.Dapr.Common\AzContainerAppService.Dapr.Common.csproj", "{D2407BC2-ADC5-4BBF-8AD9-CF7675F25CB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzContainerAppService.Dapr.Common", "AzContainerAppService.Dapr.Common\AzContainerAppService.Dapr.Common.csproj", "{D2407BC2-ADC5-4BBF-8AD9-CF7675F25CB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzContainerAppService.Dapr.Actors.ActorServerApi", "AzContainerAppService.Dapr.Actors.ActorServerApi\AzContainerAppService.Dapr.Actors.ActorServerApi.csproj", "{1DF9A110-C97A-42DC-91F3-18F1899DCB4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzContainerAppService.Dapr.Actors.ActorClientApi", "AzContainerAppService.Dapr.Actors.ActorClientApi\AzContainerAppService.Dapr.Actors.ActorClientApi.csproj", "{FC35AA11-C5AC-44E8-9C3D-FDF8447B0CC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{D2407BC2-ADC5-4BBF-8AD9-CF7675F25CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2407BC2-ADC5-4BBF-8AD9-CF7675F25CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2407BC2-ADC5-4BBF-8AD9-CF7675F25CB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DF9A110-C97A-42DC-91F3-18F1899DCB4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF9A110-C97A-42DC-91F3-18F1899DCB4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF9A110-C97A-42DC-91F3-18F1899DCB4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF9A110-C97A-42DC-91F3-18F1899DCB4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC35AA11-C5AC-44E8-9C3D-FDF8447B0CC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC35AA11-C5AC-44E8-9C3D-FDF8447B0CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC35AA11-C5AC-44E8-9C3D-FDF8447B0CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC35AA11-C5AC-44E8-9C3D-FDF8447B0CC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
