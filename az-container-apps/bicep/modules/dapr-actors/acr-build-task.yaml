@@ -1,0 +1,36 @@
+version: v1.1.0
+steps:
+  - id: build-dapr-actor-client
+    when: ["-"]
+    build: -t $Registry/azdapractorclient:$ID -t $Registry/azdapractorclient:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.Dapr.Actors.ActorClientApi/Dockerfile ./az-container-apps/AzContainerAppService/
+  - id: test-dapr-actor-client-image
+    when: ["build-dapr-actor-client"]
+    cmd: -t {{.Run.Registry}}/azdapractorclient:{{.Run.ID}}
+    detach: true
+    ports: ["8083:80"]
+    env: 
+     - ASPNETCORE_URLS=http://+:80
+     - Dapr::ApiSidecarPort=64441
+     - Dapr::ApiSidecarHostName=localhost
+     - Dapr::ApiSidecarScheme=http
+  - id: push-client-images
+    when: ["test-dapr-actor-client-image"]
+    push:
+    - $Registry/azdapractorclient:$ID
+    - $Registry/azdapractorclient:latest
+
+  - id: build-dapr-actor-server
+    when: ["-"]
+    build: -t $Registry/azdapractorserver:$ID -t $Registry/azdapractorserver:latest -f ./az-container-apps/AzContainerAppService/AzContainerAppService.Dapr.Actors.ActorServerApi/Dockerfile ./az-container-apps/AzContainerAppService/
+  - id: test-dapr-actor-server-image
+    when: ["build-dapr-actor-server"]
+    cmd: -t {{.Run.Registry}}/azdapractorserver:{{.Run.ID}}
+    detach: true
+    ports: ["8084:80"]
+    env: 
+     - ASPNETCORE_URLS=http://+:80
+  - id: push-server-images
+    when: ["test-dapr-actor-server-image"]
+    push:
+    - $Registry/azdapractorserver:$ID
+    - $Registry/azdapractorserver:latest
