@@ -19,8 +19,12 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
   name: 'containerreg${randomSuffix}'
 }
 
-resource servicebusNameSpace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
-  name: 'servicebusns${randomSuffix}'
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = {
+  name: 'cosmosdbaccount${randomSuffix}'
+}
+
+resource cosmosDbDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-04-15' existing = {
+  name: 'cosmosdb${randomSuffix}'
 }
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
@@ -65,38 +69,52 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-p
   }
 }
 
-
-// https://github.com/Azure-Samples/pubsub-dapr-csharp-servicebus/blob/main/infra/app/app-env.bicep
-
-resource daprComponentPubsub 'Microsoft.App/managedEnvironments/daprComponents@2022-06-01-preview' = {
+resource daprComponentActorState 'Microsoft.App/managedEnvironments/daprComponents@2022-06-01-preview' = {
   parent: containerAppEnvironment
-  name: 'orderpubsub'
+  name: 'actor-state-cosmos'
   properties: {
-    componentType: 'pubsub.azure.servicebus'
+    componentType: 'state.azure.cosmosdb'
     version: 'v1'
     metadata: [
-      {
-        name: 'azureClientId'
-        // see https://github.com/Azure-Samples/pubsub-dapr-csharp-servicebus/blob/main/infra/app/access.bicep
-        // See https://docs.dapr.io/developing-applications/integrations/azure/azure-authentication/authenticating-azure/#authenticating-with-managed-identities-mi
-        value: containerManagedIdentity.properties.clientId
-      }
-      {
-        name: 'namespaceName' // See https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-azure-servicebus-topics/#spec-metadata-fields
-        value: '${servicebusNameSpace.name}.servicebus.windows.net' // the .servicebus.windows.net suffix is required as per dapr docs
-      }
       // {
-      //   name: 'connectionString' // See https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-azure-servicebus-topics/#spec-metadata-fields
-      //   value: '<PUT ENDPOINT CONN STRING HERE!>' // the .servicebus.windows.net suffix is required as per dapr docs
+      //   name: 'azureClientId'
+      //   // see https://github.com/Azure-Samples/pubsub-dapr-csharp-servicebus/blob/main/infra/app/access.bicep
+      //   // See https://docs.dapr.io/developing-applications/integrations/azure/azure-authentication/authenticating-azure/#authenticating-with-managed-identities-mi
+      //   value: containerManagedIdentity.properties.clientId
       // }
+
+      // So it turns out for using state.azure.cosmosdb component, it does not look like we can use the azureClientId managed identity setting
+      // Worked this out by looking at how Pulumi does this https://www.pulumi.com/registry/packages/azure-native/api-docs/app/daprcomponent/
+      // It looks like you have to supply a masterkey for actor state stores to work :'(
       {
-        name: 'consumerID'
-        value: 'orders' // Set to the same value of the subscription seen in ./servicebus.bicep
+        name: 'masterKey'
+        value: '' // TODO - Inject magic needed here
+      }
+
+      {
+        name: 'url'
+        // value: cosmosDbAccount.listConnectionStrings().connectionStrings[0].connectionString
+        value: 'https://${cosmosDbAccount.name}.documents.azure.com:443/'
+      }
+
+      {
+        name: 'database'
+        value: cosmosDbDatabase.name
+      }
+
+      {
+        name: 'collection'
+        value: 'actorstate'
+      }
+
+      {
+        name: 'actorStateStore'
+        value: 'true'
       }
     ]
     scopes: [
-      'mypublisher'
-      'mysubscriber'
+      'myactorserver'
+      'myactorclient'
     ]
   }
   dependsOn: [
@@ -110,13 +128,13 @@ resource daprComponentPubsub 'Microsoft.App/managedEnvironments/daprComponents@2
 // https://github.com/Azure-Samples/pubsub-dapr-csharp-servicebus/blob/main/infra/core/host/container-app-upsert.bicep
 // https://github.com/Azure-Samples/pubsub-dapr-csharp-servicebus/blob/main/infra/app/publisher.bicep
 
-var daprPublishContainerImageToUse = '${containerRegistry.properties.loginServer}/azdaprpubsubpublisher:latest'
+var daprActorServerContainerImageToUse = '${containerRegistry.properties.loginServer}/azdapractorserver:latest'
 
-resource daprPublishApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
-  name: 'daprpubapi${randomSuffix}'
+resource daprActorServerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
+  name: 'dapractorserver${randomSuffix}'
   location: targetLocation
   dependsOn: [
-    daprComponentPubsub
+    daprComponentActorState
   ]
   identity: {
     type: 'UserAssigned'
@@ -141,7 +159,7 @@ resource daprPublishApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
       ]
       dapr:{
         enabled: true
-        appId: 'mypublisher'
+        appId: 'myactorserver'
         appProtocol: 'http'
         appPort: 8080
         enableApiLogging: true
@@ -151,8 +169,8 @@ resource daprPublishApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
     template: {
       containers: [
         {
-          image: daprPublishContainerImageToUse
-          name: 'daprpubapi'
+          image: daprActorServerContainerImageToUse
+          name: 'dapractorserver'
           resources: {
             cpu: 1
             memory: '2Gi'
@@ -199,15 +217,13 @@ resource daprPublishApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
 }
 
 
+var daprActorClientContainerImageToUse = '${containerRegistry.properties.loginServer}/azdapractorclient:latest'
 
-
-var daprSubscribeContainerImageToUse = '${containerRegistry.properties.loginServer}/azdaprpubsubsubscriber:latest'
-
-resource daprSubscribeApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
-  name: 'daprsubapi${randomSuffix}'
+resource daprActorClientApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
+  name: 'dapractorclient${randomSuffix}'
   location: targetLocation
   dependsOn: [
-    daprComponentPubsub
+    daprComponentActorState
   ]
   identity: {
     type: 'UserAssigned'
@@ -232,7 +248,7 @@ resource daprSubscribeApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = 
       ]
       dapr:{
         enabled: true
-        appId: 'mysubscriber'
+        appId: 'myactorclient'
         appProtocol: 'http'
         appPort: 8080
         enableApiLogging: true
@@ -242,8 +258,8 @@ resource daprSubscribeApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = 
     template: {
       containers: [
         {
-          image: daprSubscribeContainerImageToUse
-          name: 'daprsubapi'
+          image: daprActorClientContainerImageToUse
+          name: 'dapractorclient'
           resources: {
             cpu: 1
             memory: '2Gi'
@@ -268,6 +284,22 @@ resource daprSubscribeApiApp 'Microsoft.App/containerApps@2022-06-01-preview' = 
             {
               name: 'ApiOptions__ItemName'
               value: 'AppServiceItem'
+            }
+
+            // for info on what Dapr Sidecar port to use https://learn.microsoft.com/en-us/azure/container-apps/dapr-overview?tabs=bicep1%2Cyaml
+            // also https://github.com/Azure-Samples/svc-invoke-dapr-csharp/blob/main/checkout/Program.cs
+            // and https://learn.microsoft.com/en-us/azure/container-apps/microservices-dapr-service-invoke?pivots=csharp#run-the-net-applications-locally
+            {
+              name: 'Dapr__ApiSidecarPort'
+              value: '3500'
+            }
+            {
+              name: 'Dapr__ApiSidecarHostName'
+              value: 'localhost'
+            }
+            {
+              name: 'Dapr__ApiSidecarScheme'
+              value: 'http'
             }
           ]
           probes:[

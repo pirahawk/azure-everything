@@ -108,6 +108,10 @@ resource CosmosDBContributorRole 'Microsoft.Authorization/roleDefinitions@2022-0
   name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
 }
 
+resource CosmosDBOwnerRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
+}
+
 resource acrPullContainerAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
   name: guid(containerRegistry.id, containerManagedIdentity.name, AcrPullRole.name)
   scope: containerRegistry
@@ -119,13 +123,24 @@ resource acrPullContainerAppService 'Microsoft.Authorization/roleAssignments@202
   }
 }
 
-resource sbReceiverContainerAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
-  name: guid(cosmosDbAccount.id, containerManagedIdentity.name, CosmosDBContributorRole.name)
+// resource cosmosContributorContainerAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
+//   name: guid(cosmosDbAccount.id, containerManagedIdentity.name, CosmosDBContributorRole.name)
+//   scope: cosmosDbAccount
+//   properties:{
+//     principalId: containerManagedIdentity.properties.principalId
+//     roleDefinitionId: CosmosDBContributorRole.id
+//     principalType: 'ServicePrincipal'
+//     description: 'CosmosDBContributorRole'
+//   }
+// }
+
+resource cosmosOwnerContainerAppService 'Microsoft.Authorization/roleAssignments@2022-04-01' ={
+  name: guid(cosmosDbAccount.id, containerManagedIdentity.name, CosmosDBOwnerRole.name)
   scope: cosmosDbAccount
   properties:{
     principalId: containerManagedIdentity.properties.principalId
-    roleDefinitionId: CosmosDBContributorRole.id
+    roleDefinitionId: CosmosDBOwnerRole.id
     principalType: 'ServicePrincipal'
-    description: 'CosmosDBContributorRole'
+    description: 'CosmosDBOwnerRole'
   }
 }
