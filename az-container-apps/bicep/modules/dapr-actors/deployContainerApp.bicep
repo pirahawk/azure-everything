@@ -86,6 +86,7 @@ resource daprComponentActorState 'Microsoft.App/managedEnvironments/daprComponen
       // So it turns out for using state.azure.cosmosdb component, it does not look like we can use the azureClientId managed identity setting
       // Worked this out by looking at how Pulumi does this https://www.pulumi.com/registry/packages/azure-native/api-docs/app/daprcomponent/
       // It looks like you have to supply a masterkey for actor state stores to work :'(
+      // Maybe thats why this definition on the dapr site is still correct: https://docs.dapr.io/reference/components-reference/supported-state-stores/setup-azure-cosmosdb/
       {
         name: 'masterKey'
         value: '' // TODO - Inject magic needed here
