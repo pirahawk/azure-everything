@@ -89,13 +89,12 @@ resource daprComponentActorState 'Microsoft.App/managedEnvironments/daprComponen
       // Maybe thats why this definition on the dapr site is still correct: https://docs.dapr.io/reference/components-reference/supported-state-stores/setup-azure-cosmosdb/
       {
         name: 'masterKey'
-        value: '' // TODO - Inject magic needed here
+        value: cosmosDbAccount.listKeys().secondaryMasterKey
       }
 
       {
         name: 'url'
-        // value: cosmosDbAccount.listConnectionStrings().connectionStrings[0].connectionString
-        value: 'https://${cosmosDbAccount.name}.documents.azure.com:443/'
+        value: cosmosDbAccount.properties.locations[0].documentEndpoint
       }
 
       {
