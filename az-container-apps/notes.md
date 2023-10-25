@@ -30,3 +30,36 @@ dapr run --app-id dapr-actor-api --dapr-http-port 65295 --app-port 5049 --compon
 See this
 
 https://learn.microsoft.com/en-us/azure/container-apps/dapr-overview?tabs=bicep1%2Cyaml
+
+
+# Queries Used in the logAnalyticsWorkspace
+
+```
+
+ContainerAppConsoleLogs_CL
+| order by _timestamp_d asc
+| where ContainerName_s startswith "daprd"
+| project  Log_s
+
+
+ContainerAppConsoleLogs_CL
+| where ContainerName_s == 'dapractorclient'
+| order by _timestamp_d asc
+| project  Log_s
+
+
+ContainerAppConsoleLogs_CL
+| where ContainerName_s == 'dapractorserver'
+| order by _timestamp_d asc
+| project  Log_s
+
+
+ContainerAppSystemLogs_CL
+| where ContainerAppName_s startswith "dapractorclient"
+| order by _timestamp_d asc
+| project  Log_s
+
+
+AppRequests 
+| where Name != "GET /health" and Name != "GET /healthz"
+```
