@@ -19,3 +19,28 @@ https://github.com/Azure-Samples/acr-tasks
 
 # ACR Run Tasks
 Note that you ensure that any paths to the dockerfile or the build context directory in the .yaml file match the directory seperator of the chosen platform (linux/windows)
+
+# deploy.ps1 script
+```
+# To run:  .\az-containerregistry\deploy.ps1
+
+$random = "<random-guid>"
+$deploymentName="az-containerregistry"
+$azGroupName = "$deploymentName-$random"
+$azDeploymentName = "deployment-$azGroupName"
+
+
+if($null -eq $(az group show -n $azGroupName)){
+    Write-Output "Group $azGroupName does not exist"
+    az group create -l 'uksouth' -n $azGroupName    
+}else {
+    Write-Output "Group $azGroupName exists. Deploying: $azDeploymentName"
+}
+
+$sid = $(az ad signed-in-user show --query "id").Trim('"')
+
+az deployment group create -g $azGroupName -n $azDeploymentName -f ".\$deploymentName\bicep\deploy.bicep" `
+--parameters `
+randomSuffix="$random" `
+userPrincipalId="$sid"
+```

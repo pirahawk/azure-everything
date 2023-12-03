@@ -1,5 +1,3 @@
-
-
 # To run the Dapr Az container Apps locally
 
 
@@ -62,4 +60,111 @@ ContainerAppSystemLogs_CL
 
 AppRequests 
 | where Name != "GET /health" and Name != "GET /healthz"
+```
+
+# deploy.ps1 script
+```
+# To run:  .\az-container-apps\deploy.ps1
+
+$random = "<random-guid>"
+$azGroupName = "az-container-apps-$random"
+$azDeploymentName = "deployment-$azGroupName"
+$sid = $(az ad signed-in-user show --query "id").Trim('"')
+
+
+if($null -eq $(az group show -n $azGroupName)){
+    Write-Output "Group $azGroupName does not exist"
+    az group create -l 'uksouth' -n $azGroupName    
+}else {
+    Write-Output "Group $azGroupName exists. Deploying: $azDeploymentName"
+}
+
+
+
+# Deploy Simple NO RBAC
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\no-rbac-simple\deployContainerAppSimpleNoRbac.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+
+
+
+# Deploy with RBAC
+
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\with-rbac\deployContainerRegistry.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+#  .\az-container-apps\acr-build.ps1
+
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\with-rbac\deployContainerApp.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+
+
+
+
+
+
+
+# Deploy Client Server with RBAC
+
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\with-rbac-client-server\deployContainerRegistry.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+# .\az-container-apps\acr-build.ps1
+
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\with-rbac-client-server\deployContainerApp.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+
+
+
+
+
+
+
+
+
+# Deploy Dapr Pub Sub
+
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\dapr-pubsub\deployContainerRegistry.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+
+#  .\az-container-apps\bicep\modules\dapr-pubsub\acr-build.ps1 -random $random
+
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\dapr-pubsub\deployContainerApp.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+
+
+
+
+
+# Deploy Dapr Actors
+
+#  az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\dapr-actors\deployContainerRegistry.bicep `
+#  --parameters `
+#  randomSuffix="$random" `
+#  userPrincipalId="$sid"
+
+# .\az-container-apps\bicep\modules\dapr-actors\acr-build.ps1 -random $random
+
+ az deployment group create -g $azGroupName -n $azDeploymentName -f .\az-container-apps\bicep\modules\dapr-actors\deployContainerApp.bicep `
+ --parameters `
+ randomSuffix="$random" `
+ userPrincipalId="$sid"
 ```
