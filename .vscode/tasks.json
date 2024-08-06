@@ -2,6 +2,43 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "buildBeconapi",
+            "command": "dotnet build ${workspaceFolder}/src/beaconService/BeaconService.sln",
+            "type": "shell",
+            "detail": "Build Beacon API",
+            "args": [],
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true,
+                "close": true,
+
+            }
+        },
+        {
+            "label": "publishapi", // This works great because the type:shell which means I can just put the whole command as is in the command property
+            "command": "dotnet publish ${workspaceFolder}/src/beaconService/BeaconService.Api/BeaconService.Api.csproj -c Debug -o ${workspaceFolder}/pub/beaconService",
+            "type": "shell",
+            "detail": "Publish Beacon API",
+            "args": [],
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true,
+                "close": true,
+            }
+        },
+        {
             "label": "build",
             "command": "dotnet",
             "type": "process",
@@ -16,70 +53,6 @@
                 "publishapi"
             ],
             
-        },
-        {
-            "label": "publishapi", // This works great because the type:shell which means I can just put the whole command as is in the command property
-            "command": "dotnet publish ${workspaceFolder}/src/beaconService/BeaconService.Api/BeaconService.Api.csproj -c Debug -o ${workspaceFolder}/pub/beaconService",
-            "type": "shell",
-            "args": [],
-            "problemMatcher": "$msCompile",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "revealProblems": "onProblem",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true
-            }
-        },
-        {
-            "label": "publishapiOLD", // Notice that this uses a process and requires official MSBUILD /properties for a dotnet publish command flag. See https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-publish#msbuild
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/src/beaconService/BeaconService.Api/BeaconService.Api.csproj",
-                "/property:Configuration=Debug",
-                "/property:PublishDir=${workspaceFolder}/pub/beaconService",
-               
-            ],
-            "problemMatcher": "$msCompile",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "revealProblems": "onProblem",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true
-            }
-
-        },
-        {
-            "label": "publishapirun", // Won't quite run because it will hang until the API Dotnet process exits and prevent launching anything else. Good to know though.
-            "command": "dotnet",
-            "type": "process",
-            "isBackground": true,
-            "args": [
-                "BeaconService.Api.dll",
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}/pub/beaconService"
-            },
-            "problemMatcher": "$msCompile",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "revealProblems": "onProblem",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true
-            },
-            "dependsOn":[
-                "publishapi"
-            ],
         },
         {
             "label": "publish",
@@ -105,5 +78,53 @@
             ],
             "problemMatcher": "$msCompile"
         }
+                // {
+        //     "label": "publishapiOLD", // Notice that this uses a process and requires official MSBUILD /properties for a dotnet publish command flag. See https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-publish#msbuild
+        //     "command": "dotnet",
+        //     "type": "process",
+        //     "args": [
+        //         "publish",
+        //         "${workspaceFolder}/src/beaconService/BeaconService.Api/BeaconService.Api.csproj",
+        //         "/property:Configuration=Debug",
+        //         "/property:PublishDir=${workspaceFolder}/pub/beaconService",
+               
+        //     ],
+        //     "problemMatcher": "$msCompile",
+        //     "presentation": {
+        //         "echo": true,
+        //         "reveal": "always",
+        //         "revealProblems": "onProblem",
+        //         "focus": false,
+        //         "panel": "dedicated",
+        //         "showReuseMessage": true,
+        //         "clear": true
+        //     }
+
+        // },
+        // {
+        //     "label": "publishapirun", // Won't quite run because it will hang until the API Dotnet process exits and prevent launching anything else. Good to know though.
+        //     "command": "dotnet",
+        //     "type": "process",
+        //     "isBackground": true,
+        //     "args": [
+        //         "BeaconService.Api.dll",
+        //     ],
+        //     "options": {
+        //         "cwd": "${workspaceFolder}/pub/beaconService"
+        //     },
+        //     "problemMatcher": "$msCompile",
+        //     "presentation": {
+        //         "echo": true,
+        //         "reveal": "always",
+        //         "revealProblems": "onProblem",
+        //         "focus": false,
+        //         "panel": "dedicated",
+        //         "showReuseMessage": true,
+        //         "clear": true
+        //     },
+        //     "dependsOn":[
+        //         "publishapi"
+        //     ],
+        // },
     ]
 }

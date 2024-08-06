@@ -5,10 +5,9 @@
             "name": "C#: BeaconService.Api Debug",
             "type": "dotnet",
             "request": "launch",
-            "preLaunchTask": "build",
-            
+            "preLaunchTask": "buildBeconapi",
             "projectPath": "${workspaceFolder}/src/beaconService/BeaconService.Api/BeaconService.Api.csproj",
-            "launchConfigurationId": "https"
+            "launchConfigurationId": "https",
         },
         {
             "name": ".NET Core Attach",
