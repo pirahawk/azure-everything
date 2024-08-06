@@ -5,6 +5,9 @@
 
 .DS_Store
 
+## Just dont want to check in the csv files yet (they are huge)
+pp-2023.csv 
+
 # Specific Exclusions
 appsettings.local.json
 deploy.md
