@@ -13,7 +13,7 @@ local-az-dapr-components
 deployapp.sh
 pub/
 # vscode 
-.vscode/
+#.vscode/
 
 # User-specific files
 *.rsuser
