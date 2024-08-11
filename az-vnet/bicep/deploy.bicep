@@ -119,14 +119,6 @@ resource beaconone 'Microsoft.App/containerApps@2022-06-01-preview' = {
               name: 'ServiceName'
               value: 'Beacon Service One'
             }
-            {
-              name: 'ApiEndPoints__0'
-              value: 'https://google.com'
-            }
-            {
-              name: 'ApiEndPoints__1'
-              value: 'https://google.com'
-            }
           ]
           probes:[
             {
