@@ -1,7 +1,10 @@
+using System.Reflection;
 using BeaconService.Api.Controllers;
 using Microsoft;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 
