@@ -1,0 +1,36 @@
+name: Build-Publish-Docker-Images
+on: [push]
+
+jobs:
+  build_beaconservice:
+    name: Publish BeaconService API Docker Image
+    # if:  github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+
+    - name: checkout-repo
+      uses: actions/checkout@v4
+      with:
+        clean: 'true'
+
+    - name: docker-login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: docker-build-push-docker-image
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        context: ./
+        file: ./src/beaconService/dockerfile
+        tags: | 
+          ghcr.io/${{ github.repository }}/beaconservice:${{github.run_number}}
+          ghcr.io/${{ github.repository }}/beaconservice:latest

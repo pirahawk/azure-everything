@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: BeaconService.Api Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "preLaunchTask": "buildBeconapi",
+            "projectPath": "${workspaceFolder}/src/beaconService/BeaconService.Api/BeaconService.Api.csproj",
+            "launchConfigurationId": "https",
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        },
+        {
+            // THIS ONE DOES NOT WORK. LEFT HERE FOR FUTURE REFERENCE ONLY!!
+
+            // Use IntelliSense to find out which attributes exist for C# debugging
+            // Use hover for the description of the existing attributes
+            // For further information visit https://github.com/dotnet/vscode-csharp/blob/main/debugger-launchjson.md
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/az-blobstore/high-volume-data-load/AzPropertyLoader.CsvParser/bin/Debug/net8.0/AzPropertyLoader.CsvParser.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/az-blobstore/high-volume-data-load/AzPropertyLoader.CsvParser",
+            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

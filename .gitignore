@@ -3,14 +3,20 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+.DS_Store
+
+## Just dont want to check in the csv files yet (they are huge)
+pp-2023.csv 
+
 # Specific Exclusions
 appsettings.local.json
 deploy.md
 deploy.ps1
 local-az-dapr-components
-
+deployapp.sh
+pub/
 # vscode 
-.vscode/
+#.vscode/
 
 # User-specific files
 *.rsuser
