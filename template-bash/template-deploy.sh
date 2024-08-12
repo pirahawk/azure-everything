@@ -2,7 +2,8 @@
 
 if [[ ! $1 ]]
 then
-    echo 'Random Prefix is missing'
+    echo 'Random Suffix is missing'
+    exit 1
 else
     randomSuffix=$1
 fi
