@@ -50,11 +50,54 @@ fi
 azSignedInUserId=$(az ad signed-in-user show --query "id" -o tsv)
 
 echo "Signed In as $azSignedInUserId"
-echo "executing deployment $azDeploymentName"
 
 
-az deployment group create -g $azGroupName -n $azDeploymentName --no-wait -f ./az-vnet/bicep/deploy.bicep \
- --parameters \
- randomSuffix="$randomSuffix" \
- userPrincipalId="$azSignedInUserId" \
- sshPublicKey="$vmsshkeypub"
+
+# So I found that I first have to create the VNET by iteself (hence why in its own BICEP with wait on deployment to finish).
+# Reason for this, you don't want to re-deploy the VNET + Subnet if it already exists, I found it tends to want to re-create the subnet for some reason.
+# Also the VNET provisioning can take some time. If I don't wait for it, the subsequent scripts will fail because they reference the VNET + Subnets etc.
+# Hence I want to wait for it all to deploy and put some effor into ensuring it exists before re-deploying again.
+
+vnetName="vnet$randomSuffix"
+vnetExistCheck=$(az network vnet show -g $azGroupName -n $vnetName --query "name" -o tsv)
+vnetSubnetExistCheck=$(az network vnet show -g $azGroupName -n $vnetName --query "subnets[].name" -o tsv)
+shouldDeploySubnet=false
+
+if [[ ! $vnetExistCheck ]]
+then
+    echo "VNET '$vnetName' does not exist. Will create VNET"
+    shouldDeploySubnet=true
+else 
+    echo "VNET '$vnetName' exists. Will NOT re-create VNET"
+fi
+
+ echo "VNET Check outcome is: $shouldDeploySubnet"
+
+
+if $shouldDeploySubnet
+then
+    echo "executing deployment $azDeploymentName"
+
+    az deployment group create -g $azGroupName -n "vnet-$azDeploymentName" -f ./az-vnet/bicep/deployvnet.bicep \
+    --parameters \
+    randomSuffix="$randomSuffix" \
+    userPrincipalId="$azSignedInUserId" \
+    shouldDeploySubnet=$shouldDeploySubnet
+fi
+
+
+
+
+
+# az deployment group create -g $azGroupName -n "vm-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployVm.bicep \
+#  --parameters \
+#  randomSuffix="$randomSuffix" \
+#  userPrincipalId="$azSignedInUserId" \
+#  sshPublicKey="$vmsshkeypub"
+
+
+# az deployment group create -g $azGroupName -n "app-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployContainerApps.bicep \
+#  --parameters \
+#  randomSuffix="$randomSuffix" \
+#  userPrincipalId="$azSignedInUserId" \
+#  sshPublicKey="$vmsshkeypub"
