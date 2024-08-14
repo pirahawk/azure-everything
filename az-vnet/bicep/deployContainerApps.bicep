@@ -4,16 +4,6 @@ param userPrincipalId string
 var targetLocation = resourceGroup().location
 var containerImageReference = 'ghcr.io/pirahawk/azure-everything/beaconservice:latest'
 
-
-
-
-
-
-
-
-//// DEPLOY CONTAINER APPS
-
-
 resource containerManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: 'containerAppIdentity${randomSuffix}'
   location: targetLocation

@@ -77,7 +77,7 @@ fi
 if $shouldDeploySubnet
 then
     echo "executing deployment $azDeploymentName"
-
+# Notice how we are waiting for VNET deploy to finish. Because the two deployments below will need it to be in place.
     az deployment group create -g $azGroupName -n "vnet-$azDeploymentName" -f ./az-vnet/bicep/deployvnet.bicep \
     --parameters \
     randomSuffix="$randomSuffix" \
@@ -86,18 +86,14 @@ then
 fi
 
 
+az deployment group create -g $azGroupName -n "vm-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployVm.bicep \
+ --parameters \
+ randomSuffix="$randomSuffix" \
+ userPrincipalId="$azSignedInUserId" \
+ sshPublicKey="$vmsshkeypub"
 
 
-
-# az deployment group create -g $azGroupName -n "vm-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployVm.bicep \
-#  --parameters \
-#  randomSuffix="$randomSuffix" \
-#  userPrincipalId="$azSignedInUserId" \
-#  sshPublicKey="$vmsshkeypub"
-
-
-# az deployment group create -g $azGroupName -n "app-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployContainerApps.bicep \
-#  --parameters \
-#  randomSuffix="$randomSuffix" \
-#  userPrincipalId="$azSignedInUserId" \
-#  sshPublicKey="$vmsshkeypub"
+az deployment group create -g $azGroupName -n "app-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployContainerApps.bicep \
+ --parameters \
+ randomSuffix="$randomSuffix" \
+ userPrincipalId="$azSignedInUserId"
