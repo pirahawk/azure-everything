@@ -33,6 +33,20 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+resource appsubnetnsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' existing = {
+  name: 'appsubnetnsg${randomSuffix}'
+}
+
+resource vnetLab 'Microsoft.Network/virtualNetworks@2023-05-01' existing = {
+  name: 'vnet${randomSuffix}'
+}
+
+resource appsubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' existing = {
+   name: 'appsubnet'
+  parent: vnetLab
+}
+
+
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' = {
   name: 'containerappenv${randomSuffix}'
   location: targetLocation
@@ -45,12 +59,17 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-p
         customerId: logAnalyticsWorkspace.properties.customerId
         sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
+      
     }
+    vnetConfiguration:{
+      infrastructureSubnetId: appsubnet.id
+      internal:true
+    }    
   }
 }
 
-resource beaconone 'Microsoft.App/containerApps@2022-06-01-preview' = {
-  name: 'beaconone${randomSuffix}'
+resource targetbeaconone 'Microsoft.App/containerApps@2022-06-01-preview' = {
+  name: 'targetbeaconone${randomSuffix}'
   location: targetLocation
   dependsOn: [
   ]
@@ -85,10 +104,11 @@ resource beaconone 'Microsoft.App/containerApps@2022-06-01-preview' = {
       // }
     }
     template: {
+      revisionSuffix: 'targetbeaconone'
       containers: [
         {
           image: containerImageReference
-          name: 'beaconserviceone'
+          name: 'targetbeaconone'
           resources: {
             cpu: 1
             memory: '2Gi'
@@ -116,7 +136,7 @@ resource beaconone 'Microsoft.App/containerApps@2022-06-01-preview' = {
             }
             {
               name: 'ServiceName'
-              value: 'Beacon Service One'
+              value: 'Target Beacon One'
             }
           ]
           probes:[
@@ -139,8 +159,8 @@ resource beaconone 'Microsoft.App/containerApps@2022-06-01-preview' = {
 }
 
 
-resource beacontwo 'Microsoft.App/containerApps@2022-06-01-preview' = {
-  name: 'beacontwo${randomSuffix}'
+resource beaconservice 'Microsoft.App/containerApps@2022-06-01-preview' = {
+  name: 'beaconservice${randomSuffix}'
   location: targetLocation
   dependsOn: [
   ]
@@ -161,10 +181,11 @@ resource beacontwo 'Microsoft.App/containerApps@2022-06-01-preview' = {
       }
     }
     template: {
+      revisionSuffix: 'beaconservice'
       containers: [
         {
           image: containerImageReference
-          name: 'beaconservicetwo'
+          name: 'beaconservice'
           resources: {
             cpu: 1
             memory: '2Gi'
@@ -188,11 +209,11 @@ resource beacontwo 'Microsoft.App/containerApps@2022-06-01-preview' = {
             }
             {
               name: 'ServiceName'
-              value: 'Beacon Service Two'
+              value: 'Beacon Service One'
             }
             {
               name: 'ApiEndPoints__0'
-              value: 'https://${beaconone.properties.configuration.ingress.fqdn}'
+              value: 'https://${targetbeaconone.properties.configuration.ingress.fqdn}'
             }
           ]
           probes:[

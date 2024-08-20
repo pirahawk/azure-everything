@@ -85,15 +85,38 @@ then
     shouldDeploySubnet=$shouldDeploySubnet
 fi
 
+# --no-wait
+# Update: Sadly I cannot use the "--no-wait" flag on the deployments below, because the Azure Private DNS zone depends on the two deployments being in place.
 
-az deployment group create -g $azGroupName -n "vm-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployVm.bicep \
+az deployment group create -g $azGroupName -n "vm-$azDeploymentName" -f ./az-vnet/bicep/deployVm.bicep \
  --parameters \
  randomSuffix="$randomSuffix" \
  userPrincipalId="$azSignedInUserId" \
  sshPublicKey="$vmsshkeypub"
 
-
-az deployment group create -g $azGroupName -n "app-$azDeploymentName" --no-wait -f ./az-vnet/bicep/deployContainerApps.bicep \
+# need to wait for this as the private DNS Zone depends on the resources created here
+az deployment group create -g $azGroupName -n "app-$azDeploymentName"  -f ./az-vnet/bicep/deployContainerApps.bicep \
  --parameters \
  randomSuffix="$randomSuffix" \
  userPrincipalId="$azSignedInUserId"
+
+# I now need to resolve the default domain of the Azure Container App. This is because the Private DNS zone needs to contain the same domain so that the A records will translate correctly.
+# See this video: https://www.youtube.com/watch?v=ccDzgfVslR0&list=LL&index=1
+containerAppDefaultDomain=$(az containerapp env show -g $azGroupName -n "containerappenv$randomSuffix" --query "properties.defaultDomain" -o tsv)
+containerAppIp=$(az containerapp env show -g $azGroupName -n "containerappenv$randomSuffix" --query "properties.staticIp" -o tsv)
+
+
+if [[ ! $containerAppDefaultDomain ]]
+then
+    echo "Container App Domain could not be found. Skipping Creating DNS zone for container app"
+    exit 1
+else
+    echo "Container App Domain is '$containerAppDefaultDomain' Will create DNS zone for container app"
+fi
+
+ # need to wait for this as the private DNS Zone depends on the resources created here
+az deployment group create -g $azGroupName -n "dnszone-$azDeploymentName"  -f ./az-vnet/bicep/deployDns.bicep \
+ --parameters \
+ randomSuffix="$randomSuffix" \
+ userPrincipalId="$azSignedInUserId" \
+ containerAppDefaultDomain="$containerAppDefaultDomain" \

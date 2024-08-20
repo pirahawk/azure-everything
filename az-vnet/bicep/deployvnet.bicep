@@ -10,9 +10,9 @@ resource vmsubnetnsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
 
   resource nsgallowsshrule 'securityRules@2023-05-01' = {
     name: 'nsgallowsshrule'
-    properties:{
+    properties: {
       access: 'Allow'
-      protocol:'Tcp'
+      protocol: 'Tcp'
       direction: 'Inbound'
       sourceAddressPrefix: '*'
       sourcePortRange: '*'
@@ -24,9 +24,9 @@ resource vmsubnetnsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
 
   resource nsgallowhttprule 'securityRules@2023-05-01' = {
     name: 'nsgallowhttprule'
-    properties:{
+    properties: {
       access: 'Allow'
-      protocol:'Tcp'
+      protocol: 'Tcp'
       direction: 'Inbound'
       sourceAddressPrefix: '*'
       sourcePortRange: '*'
@@ -42,24 +42,23 @@ resource appsubnetnsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
   location: resourceGroup().location
 }
 
-
-resource vnetLab 'Microsoft.Network/virtualNetworks@2023-05-01' = if(shouldDeploySubnet) {
+resource vnetLab 'Microsoft.Network/virtualNetworks@2023-05-01' = if (shouldDeploySubnet) {
   name: 'vnet${randomSuffix}'
   location: resourceGroup().location
-  properties:{
-    addressSpace:{
-      addressPrefixes:[
-        '192.168.0.0/16'
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.0.0.0/16'
       ]
     }
   }
 
   // Note: Use https://www.davidc.net/sites/default/subnets/subnets.html to calculate the subnet address prefixes to make sure the subnets IP's don't overlap otherwise Azure deployment will Fail.
 
-  resource vmsubnet 'subnets@2023-05-01' = if(shouldDeploySubnet) {
+  resource vmsubnet 'subnets@2023-05-01' = if (shouldDeploySubnet) {
     name: 'vmsubnet'
-    properties:{
-      addressPrefix:'192.168.0.0/27'
+    properties: {
+      addressPrefix: '10.0.0.0/22'
       networkSecurityGroup: {
         id: vmsubnetnsg.id
         location: vmsubnetnsg.location
@@ -67,10 +66,10 @@ resource vnetLab 'Microsoft.Network/virtualNetworks@2023-05-01' = if(shouldDeplo
     }
   }
 
-  resource appsubnet 'subnets@2023-05-01' = if(shouldDeploySubnet) {
+  resource appsubnet 'subnets@2023-05-01' = if (shouldDeploySubnet) {
     name: 'appsubnet'
-    properties:{
-      addressPrefix:'192.168.0.32/27'
+    properties: {
+      addressPrefix: '10.0.4.0/22'
       networkSecurityGroup: {
         id: appsubnetnsg.id
         location: appsubnetnsg.location
