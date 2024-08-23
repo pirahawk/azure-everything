@@ -13,3 +13,12 @@ docker build -t beaconservice:latest -f ./src/beaconService/dockerfile .
 docker run --rm -d -p 7285:443 -p 5285:80 -e ASPNETCORE_URLS="http://+" beaconservice:latest -n mybeaconservice
 ```
 
+```dotnetcli
+dotnet user-secrets set "ApiEndPoints:0" "http://localhost:5000"
+
+
+dotnet user-secrets set "BlobStores:0:Name" ""
+```
+
+
+

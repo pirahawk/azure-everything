@@ -1,5 +1,6 @@
 using System.Reflection;
 using BeaconService.Api.Controllers;
+using BeaconService.Api.Utils;
 using Microsoft;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddOptions<BeaconConfigurationModel>().BindConfiguration("");
+builder.Services.AddSingleton<BlobConnectionFactory>();
 BuildClientServices();
 
 

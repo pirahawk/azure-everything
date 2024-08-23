@@ -22,7 +22,7 @@ public class EndpointsController : ControllerBase
         this.httpClientFactory = httpClientFactory;
     }
 
-    [HttpGet("/{apiEndpointId:int?}", Name = "CallEndpoint")]
+    [HttpGet("{apiEndpointId:int?}", Name = "CallEndpoint")]
     public async Task<IActionResult> CallEndpoint(int? apiEndpointId = 0)
     {
         try

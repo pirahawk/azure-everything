@@ -19,7 +19,7 @@ public class BeaconController : ControllerBase
         this.logger = logger;
     }
 
-    [HttpGet("/ping", Name = "BeaconPing")]
+    [HttpGet("ping", Name = "BeaconPing")]
     public async Task<IActionResult> Ping(){
         logger.LogInformation($"Ping Request Received for: {beaconConfiguration.Value.ServiceName}");
         return await Task.FromResult(Ok($"Ping Success: {beaconConfiguration.Value.ServiceName}"));
