@@ -29,7 +29,7 @@ then
      vmsshkeypub=$(<"$vmsshkeypubpath")
 else
     echo "SSH key does not exist: $vmsshkeypubpath Generating Key"
-     ssh-keygen -t rsa -b 4096 -f $vmsshkeypath -N '' # Notice the -N '' That sets an empty passphrase so you don't get prompted
+    ssh-keygen -t rsa -b 4096 -f $vmsshkeypath -N '' # Notice the -N '' That sets an empty passphrase so you don't get prompted
 fi
 
 azGroupName="az-vnet-$randomSuffix"
@@ -78,7 +78,7 @@ if $shouldDeploySubnet
 then
     echo "executing deployment $azDeploymentName"
 # Notice how we are waiting for VNET deploy to finish. Because the two deployments below will need it to be in place.
-    az deployment group create -g $azGroupName -n "vnet-$azDeploymentName" -f ./az-vnet/bicep/deployvnet.bicep \
+    az deployment group create -g $azGroupName -n "vnet-$azDeploymentName" -f ./az-vnet/az-container-app-with-private-vnet/bicep/deployvnet.bicep \
     --parameters \
     randomSuffix="$randomSuffix" \
     userPrincipalId="$azSignedInUserId" \
@@ -88,14 +88,14 @@ fi
 # --no-wait
 # Update: Sadly I cannot use the "--no-wait" flag on the deployments below, because the Azure Private DNS zone depends on the two deployments being in place.
 
-az deployment group create -g $azGroupName -n "vm-$azDeploymentName" -f ./az-vnet/bicep/deployVm.bicep \
+az deployment group create -g $azGroupName -n "vm-$azDeploymentName" -f ./az-vnet/az-container-app-with-private-vnet/bicep/deployVm.bicep \
  --parameters \
  randomSuffix="$randomSuffix" \
  userPrincipalId="$azSignedInUserId" \
  sshPublicKey="$vmsshkeypub"
 
 # need to wait for this as the private DNS Zone depends on the resources created here
-az deployment group create -g $azGroupName -n "app-$azDeploymentName"  -f ./az-vnet/bicep/deployContainerApps.bicep \
+az deployment group create -g $azGroupName -n "app-$azDeploymentName"  -f ./az-vnet/az-container-app-with-private-vnet/bicep/deployContainerApps.bicep \
  --parameters \
  randomSuffix="$randomSuffix" \
  userPrincipalId="$azSignedInUserId"
@@ -115,7 +115,7 @@ else
 fi
 
  # need to wait for this as the private DNS Zone depends on the resources created here
-az deployment group create -g $azGroupName -n "dnszone-$azDeploymentName"  -f ./az-vnet/bicep/deployDns.bicep \
+az deployment group create -g $azGroupName -n "dnszone-$azDeploymentName"  -f ./az-vnet/az-container-app-with-private-vnet/bicep/deployDns.bicep \
  --parameters \
  randomSuffix="$randomSuffix" \
  userPrincipalId="$azSignedInUserId" \
