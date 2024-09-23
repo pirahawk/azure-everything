@@ -23,7 +23,7 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-p
 }
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: containerAppDefaultDomain
+  name: containerAppDefaultDomain // This has to be the domain for the container app environment so that it knows where to resolve for
   location: 'global' // These need to be global because Azure DNS is a global resource. Will get errors if anything else
 
   resource privateDnsVnetLink 'virtualNetworkLinks@2020-06-01' = {

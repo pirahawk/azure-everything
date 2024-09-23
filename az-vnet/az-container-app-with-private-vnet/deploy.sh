@@ -30,6 +30,7 @@ then
 else
     echo "SSH key does not exist: $vmsshkeypubpath Generating Key"
     ssh-keygen -t rsa -b 4096 -f $vmsshkeypath -N '' # Notice the -N '' That sets an empty passphrase so you don't get prompted
+    vmsshkeypub=$(<"$vmsshkeypubpath")
 fi
 
 azGroupName="az-vnet-$randomSuffix"

@@ -49,7 +49,7 @@ resource vmnic 'Microsoft.Network/networkInterfaces@2023-05-01'= {
   properties:{
     nicType: 'Standard'
     enableAcceleratedNetworking: true
-    enableIPForwarding: false
+    enableIPForwarding: false  // This should be enabled if you want the VM to act as a NVA for a hub and spoke network
     disableTcpStateTracking: false
     auxiliaryMode: 'None'
     auxiliarySku: 'None'
