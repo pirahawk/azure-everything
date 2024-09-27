@@ -22,9 +22,22 @@ public class BlobConnectionFactory
         var blobConfig = beaconConfiguration.Value.BlobStores.ToArray()[connectionId];
         Assumes.NotNull(blobConfig);
 
+        var azureCredential = new DefaultAzureCredential();
+
+        string? userAssignedClientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
+
+        if (!string.IsNullOrWhiteSpace(userAssignedClientId))
+        {
+            azureCredential = new DefaultAzureCredential(
+                new DefaultAzureCredentialOptions
+                {
+                    ManagedIdentityClientId = userAssignedClientId
+                });
+        }
+
         var blobServiceClient = new BlobServiceClient(
         new Uri(blobConfig.BlobUrl),
-        new DefaultAzureCredential());
+        azureCredential);
 
         var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobConfig.ContainerName);
         return blobContainerClient;
