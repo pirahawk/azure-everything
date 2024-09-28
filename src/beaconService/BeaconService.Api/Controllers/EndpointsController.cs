@@ -28,7 +28,7 @@ public class EndpointsController : ControllerBase
         try
         {
             var httpClient = httpClientFactory.CreateClient($"{BeaconConfigurationModel.ApiHttpClientPrefix}{apiEndpointId}");
-            var httpResponseMessage = await httpClient.GetAsync("/ping");
+            var httpResponseMessage = await httpClient.GetAsync("beacon/ping");
             return httpResponseMessage.IsSuccessStatusCode ? Ok(await httpResponseMessage.Content.ReadAsStringAsync()) : StatusCode((int)httpResponseMessage.StatusCode);
         }
         catch (Exception ex)
