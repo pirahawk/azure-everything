@@ -89,19 +89,19 @@ fi
 # --no-wait
 # Update: Sadly I cannot use the "--no-wait" flag on the deployments below, because the Azure Private DNS zone depends on the two deployments being in place.
 
-# az deployment group create -g $azGroupName -n "vm-$azDeploymentName" -f ./az-vnet/az-container-app-with-private-vnet-serviceendpoint/bicep/deployVm.bicep \
-#  --parameters \
-#  randomSuffix="$randomSuffix" \
-#  userPrincipalId="$azSignedInUserId" \
-#  sshPublicKey="$vmsshkeypub"
+az deployment group create -g $azGroupName -n "vm-$azDeploymentName" -f ./az-vnet/az-container-app-with-private-vnet-serviceendpoint/bicep/deployVm.bicep \
+ --parameters \
+ randomSuffix="$randomSuffix" \
+ userPrincipalId="$azSignedInUserId" \
+ sshPublicKey="$vmsshkeypub"
 
 # need to wait for this as the private DNS Zone depends on the resources created here
 
 # deploy all the service endpoint resources first (will be referenced later)
-# az deployment group create -g $azGroupName -n "services-$azDeploymentName"  -f ./az-vnet/az-container-app-with-private-vnet-serviceendpoint/bicep/deployServiceEndpointResources.bicep \
-#  --parameters \
-#  randomSuffix="$randomSuffix" \
-#  userPrincipalId="$azSignedInUserId"
+az deployment group create -g $azGroupName -n "services-$azDeploymentName"  -f ./az-vnet/az-container-app-with-private-vnet-serviceendpoint/bicep/deployServiceEndpointResources.bicep \
+ --parameters \
+ randomSuffix="$randomSuffix" \
+ userPrincipalId="$azSignedInUserId"
 
 az deployment group create -g $azGroupName -n "app-$azDeploymentName"  -f ./az-vnet/az-container-app-with-private-vnet-serviceendpoint/bicep/deployContainerApps.bicep \
  --parameters \
@@ -125,8 +125,8 @@ else
 fi
 
  # need to wait for this as the private DNS Zone depends on the resources created here
-# az deployment group create -g $azGroupName -n "dnszone-$azDeploymentName"  -f ./az-vnet/az-container-app-with-private-vnet-serviceendpoint/bicep/deployDns.bicep \
-#  --parameters \
-#  randomSuffix="$randomSuffix" \
-#  userPrincipalId="$azSignedInUserId" \
-#  containerAppDefaultDomain="$containerAppDefaultDomain" \
+az deployment group create -g $azGroupName -n "dnszone-$azDeploymentName"  -f ./az-vnet/az-container-app-with-private-vnet-serviceendpoint/bicep/deployDns.bicep \
+ --parameters \
+ randomSuffix="$randomSuffix" \
+ userPrincipalId="$azSignedInUserId" \
+ containerAppDefaultDomain="$containerAppDefaultDomain" \
