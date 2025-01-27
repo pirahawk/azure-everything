@@ -1,0 +1,2 @@
+deployments:
+  replicas: 1

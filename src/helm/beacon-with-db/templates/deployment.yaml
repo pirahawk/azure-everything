@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-deployment-mainbeaconservice
+  namespace: {{ include "beaconwithdb.namespace" . }}
+  labels:
+{{- include "beaconwithdb.allLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployments.replicas }}
+  selector:
+    matchLabels:
+{{- include "beaconwithdb.allLabels" . | nindent 5 }}
+  template:
+    metadata:
+      labels:
+{{- include "beaconwithdb.allLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: mainbeaconservice
+        image: ghcr.io/pirahawk/azure-everything/beaconservice:latest
+        ports:
+        - name: mainsvcport
+          containerPort: 80
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://+"
+        - name: ServiceName
+          value: "mainbeaconservice"
+        - name: ApiEndPoints__0
+          value: "http://localhost:61490"
+      - name: firstbeaconservice
+        image: ghcr.io/pirahawk/azure-everything/beaconservice:latest
+        ports:
+        - name: firstsvcport
+          containerPort: 61490
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://+:61490"
+        - name: ServiceName
+          value: "firstbeaconservice"
