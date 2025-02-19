@@ -4,7 +4,7 @@ metadata:
   name: {{ .Chart.Name }}-deployment-mainbeaconservice
   namespace: {{ include "beaconwithdb.namespace" . }}
   labels:
-{{- include "beaconwithdb.allLabels" . | nindent 4 }}
+{{- include "beaconwithdb.allLabels" . | nindent 4 }} 
 spec:
   replicas: {{ .Values.deployments.replicas }}
   selector:

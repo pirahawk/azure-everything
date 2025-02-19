@@ -13,6 +13,8 @@ release_name: {{ .Release.Name }}
 release_revision: "{{ .Release.Revision | toString }}"
 {{- end }}
 
+
+# To use example: {{- include "beaconwithdb.allLabelswithname" (dict "appName" "azure-cosmos-emulator" "Chart" .Chart "Release" .Release) | nindent 4 }}
 {{- define "beaconwithdb.allLabelswithname" -}}
 {{- $appName := .appName -}}
 app_name: {{ .Chart.Name }}
