@@ -18,6 +18,7 @@ pub/
 .ssh/
 # vscode 
 #.vscode/
+.idea/
 
 # User-specific files
 *.rsuser

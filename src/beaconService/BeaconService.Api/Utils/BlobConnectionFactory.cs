@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using BeaconService.Api.Controllers;
+using BeaconService.Api.Models;
 using Microsoft;
 using Microsoft.Extensions.Options;
 
@@ -25,7 +26,7 @@ public class BlobConnectionFactory
         var azureCredential = new DefaultAzureCredential();
 
         // Need the following because I am using a user assigned managed identity.
-        // Hence I need to expect the client ID to exist as a env var. (see your bicep to ensure this env var is being set)
+        // Hence I need to expect the client ID to exist as an env var. (see your bicep to ensure this env var is being set)
         // https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential?view=azure-dotnet#examples
         string? userAssignedClientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
 

@@ -1,5 +1,6 @@
 using System.Reflection;
 using BeaconService.Api.Controllers;
+using BeaconService.Api.Models;
 using BeaconService.Api.Utils;
 using Microsoft;
 
@@ -18,7 +19,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddOptions<BeaconConfigurationModel>().BindConfiguration("");
+
 builder.Services.AddSingleton<BlobConnectionFactory>();
+builder.Services.AddSingleton<CosmosDbConnectionFactory>();
+
 BuildClientServices();
 
 

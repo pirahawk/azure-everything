@@ -1,4 +1,5 @@
 using System.Net;
+using BeaconService.Api.Models;
 using BeaconService.Api.Utils;
 using Microsoft;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ public class BlobStoreController(
     // private readonly ILogger<BlobStoreController> logger = logger;
     // private readonly BlobConnectionFactory blobConnectionFactory = blobConnectionFactory;
 
-     [HttpGet("{blobstoreId:int?}", Name = "CallBlobStore")]
+    [HttpGet("{blobstoreId:int?}", Name = "CallBlobStore")]
     public async Task<IActionResult> CallBlobStore(int? blobstoreId = 0)
     {
         try

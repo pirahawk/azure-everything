@@ -1,3 +1,4 @@
+using BeaconService.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
