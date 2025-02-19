@@ -28,6 +28,18 @@ spec:
           value: "mainbeaconservice"
         - name: ApiEndPoints__0
           value: "http://localhost:61490"
+        - name: CosmosDbs__0__Account
+          value: "https://localhost:8081/"
+        - name: CosmosDbs__0__Database
+          value: "testdb"
+        - name: CosmosDbs__0__Container
+          value: "testcontainer"
+        - name: CosmosDbs__0__CosmosDbEmulatorAuthKey
+          value: "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+        - name: CosmosDbs__0__PartitionKeyPath
+          value: "/id"
+        - name: CosmosDbs__0__IsEmulator
+          value: "true"
       - name: firstbeaconservice
         image: ghcr.io/pirahawk/azure-everything/beaconservice:latest
         ports:
@@ -38,3 +50,35 @@ spec:
           value: "http://+:61490"
         - name: ServiceName
           value: "firstbeaconservice"
+      - name: cosmos-emulator
+        image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
+        args: ["--protocol", "https"]
+        ports:
+        - name: api-port
+          containerPort: 8081
+        - name: ui-port
+          containerPort: 1234
+        # - name: grpc-port-1
+        #   containerPort: 10250
+        - name: grpc-port-2
+          containerPort: 10251
+        - name: grpc-port-3
+          containerPort: 10252
+        - name: grpc-port-4
+          containerPort: 10253
+        - name: grpc-port-5
+          containerPort: 10254
+        - name: grpc-port-6
+          containerPort: 10255
+        env:
+        - name: ServiceName
+          value: "cosmos-emulator"
+        securityContext:
+          privileged: true  # Needed for Cosmos Emulator to function properly
+        volumeMounts:
+        - name: emulator-data
+          mountPath: /tmp/cosmosdb
+      volumes:
+      - name: emulator-data
+        emptyDir: {}
+

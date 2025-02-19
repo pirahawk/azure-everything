@@ -43,4 +43,9 @@ nslookup beaconservice<suffix>.<whatever  is assigned via deployment>.uksouth.az
 ```
 
 
+Cosmos DB emulator
+
+Assuming using the emulator and have taken setup and run notes from [here](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator-linux#docker-commands)
+
+
 
