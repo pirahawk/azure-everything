@@ -22,6 +22,8 @@ builder.Services.AddOptions<BeaconConfigurationModel>().BindConfiguration("");
 
 builder.Services.AddSingleton<BlobConnectionFactory>();
 builder.Services.AddSingleton<CosmosDbConnectionFactory>();
+builder.Services.AddSingleton<AzureCredentialFactory>();
+
 
 BuildClientServices();
 
